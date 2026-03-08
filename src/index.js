@@ -1,4 +1,5 @@
 import fastify from 'fastify'
+import sanitizeHtml from 'sanitize-html'
 import view from '@fastify/view'
 import pug from 'pug'
 
@@ -68,6 +69,18 @@ export const buildApp = async () => {
       course,
     }
     res.view('src/views/courses/show', data)
+  })
+
+  app.get('/users', (req, res) => {
+    const { id = '' } = req.query
+
+    const safeId = sanitizeHtml(id, {
+      allowedTags: [],
+      allowedAttributes: {},
+      disallowedTagsMode: 'escape',
+    })
+
+    res.view('src/views/users', { id: safeId })
   })
 
   return app
