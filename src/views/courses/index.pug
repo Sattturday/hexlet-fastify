@@ -1,0 +1,15 @@
+extends ../layouts/page.pug
+
+block content
+  h2 Список курсов
+  a(href='/courses/new', style='display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-bottom: 20px;') Создать новый курс
+
+  if courses && courses.length
+    div(style='display: grid; gap: 20px;')
+      each course in courses
+        div(style='border: 1px solid #ddd; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);')
+          h3 
+            a(href=`/courses/${course.id}`, style='color: #0066cc; text-decoration: none;') #{course.title}
+          p #{course.description}
+  else
+    p Курсы пока не добавлены

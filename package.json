@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fastify": "^5.8.1"
+    "@fastify/view": "^11.1.1",
+    "fastify": "^5.8.1",
+    "pug": "^3.0.3"
   }
 }

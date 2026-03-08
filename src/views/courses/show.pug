@@ -1,0 +1,20 @@
+extends ../layouts/page.pug
+
+block content
+  if course
+    h2 #{course.title}
+    div(style='background-color: #f9f9f9; padding: 20px; border-radius: 8px;')
+      p 
+        strong Описание: 
+        | #{course.description}
+      p 
+        strong ID курса: 
+        | #{course.id}
+    
+    div(style='margin-top: 20px;')
+      a(href='/courses', style='background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;') К списку курсов
+      a(href=`/courses/${course.id}/edit`, style='background-color: #ffc107; color: #333; padding: 10px 20px; text-decoration: none; border-radius: 5px;') Редактировать
+  else
+    h2 Курс не найден
+    p Извините, запрашиваемый курс не существует.
+    a(href='/courses', style='background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;') Вернуться к списку курсов

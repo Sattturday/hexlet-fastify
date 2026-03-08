@@ -1,24 +1,53 @@
 import fastify from 'fastify'
+import view from '@fastify/view'
+import pug from 'pug'
 
 const app = fastify()
 const port = 5000
 
-app.get('/users', (req, res) => {
-  res.send('GET /users')
+// Подключаем pug через плагин
+await app.register(view, { engine: { pug } })
+
+const state = {
+  courses: [
+    {
+      id: 1,
+      title: 'JS: Массивы',
+      description: 'Курс про массивы в JavaScript',
+    },
+    {
+      id: 2,
+      title: 'JS: Функции',
+      description: 'Курс про функции в JavaScript',
+    },
+  ],
+}
+
+// Маршрут для главной страницы
+app.get('/', (req, res) => {
+  res.view('src/views/index')
 })
 
-app.get('/users/:id/post/:postId', (req, res) => {
-  res.send(`User ID: ${req.params.id}; Post ID: ${req.params.postId}`)
+// Маршрут для списка курсов (уже есть в вашем коде)
+app.get('/courses', (req, res) => {
+  const data = {
+    courses: state.courses,
+  }
+  res.view('src/views/courses/index', data)
 })
 
-app.get('/hello', (req, res) => {
-  const { name } = req.query
-  const greeting = name ? `Hello, ${name}!` : 'Hello, World!'
-  res.send(greeting)
-})
-
-app.post('/users', (req, res) => {
-  res.send('POST /users')
+// Маршрут для отдельного курса (уже есть в вашем коде)
+app.get('/courses/:id', (req, res) => {
+  const { id } = req.params
+  const course = state.courses.find(({ id: courseId }) => courseId === parseInt(id))
+  if (!course) {
+    res.code(404).send({ message: 'Course not found' })
+    return
+  }
+  const data = {
+    course,
+  }
+  res.view('src/views/courses/show', data)
 })
 
 app.listen({ port }, () => {
