@@ -1,6 +1,7 @@
 import fastify from 'fastify'
 import view from '@fastify/view'
 import pug from 'pug'
+import sanitizeHtml from 'sanitize-html'
 
 const port = 5000
 
@@ -38,6 +39,12 @@ export const buildApp = async () => {
   // Маршрут для главной страницы
   app.get('/', (req, res) => {
     res.view('src/views/index')
+  })
+
+  app.get('/users', (req, res) => {
+    const userId = sanitizeHtml(req.query.id ?? '')
+
+    res.view('src/views/users/show', { userId })
   })
 
   // Маршрут для списка курсов (уже есть в вашем коде)

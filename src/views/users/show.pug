@@ -1,0 +1,11 @@
+extends ../layouts/page.pug
+
+block content
+  h2 Страница пользователя
+
+  if userId
+    p
+      strong Идентификатор пользователя:
+      |  !{userId}
+  else
+    p Передайте идентификатор через строку запроса, например: /users?id=42
