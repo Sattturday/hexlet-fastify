@@ -1,0 +1,16 @@
+extends ../layouts/page.pug
+
+block content
+  h1 New course
+
+  form(action="/courses" method="post")
+    div
+      label Title
+      input(type="text" name="title" required)
+
+    div
+      label Description
+      textarea(name="description" required)
+
+    div
+      input(type="submit" value="Create course")

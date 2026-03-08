@@ -1,11 +1,13 @@
 import fastify from 'fastify'
 import sanitizeHtml from 'sanitize-html'
+import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import pug from 'pug'
 
 const port = 5000
 
 const state = {
+  users: [],
   courses: [
     {
       id: 1,
@@ -33,8 +35,9 @@ const parseCourseId = (rawId) => {
 export const buildApp = async () => {
   const app = fastify()
 
-  // Подключаем pug через плагин
+  // подключаем плагины 
   await app.register(view, { engine: { pug } })
+  await app.register(formbody)
 
   // Маршрут для главной страницы
   app.get('/', (req, res) => {
@@ -83,16 +86,42 @@ export const buildApp = async () => {
     res.view('src/views/courses/show', data)
   })
 
+  app.get('/courses/new', (req, res) => {
+    res.view('src/views/courses/new')
+  })
+
+  app.post('/courses', (req, res) => {
+    const course = {
+      id: state.courses.length + 1,
+      title: req.body.title.trim(),
+      description: req.body.description.trim(),
+    }
+
+    state.courses.push(course)
+
+    res.redirect('/courses')
+  })
+
   app.get('/users', (req, res) => {
-    const { id = '' } = req.query
-
-    const safeId = sanitizeHtml(id, {
-      allowedTags: [],
-      allowedAttributes: {},
-      disallowedTagsMode: 'escape',
+    res.view('src/views/users/index', {
+      users: state.users,
     })
+  })
 
-    res.view('src/views/users', { id: safeId })
+  app.post('/users', (req, res) => {
+    const user = {
+      name: req.body.name.trim(),
+      email: req.body.email.trim().toLowerCase(),
+      password: req.body.password,
+    }
+
+    state.users.push(user)
+
+    res.redirect('/users')
+  })
+
+  app.get('/users/new', (req, res) => {
+    res.view('src/views/users/new')
   })
 
   return app

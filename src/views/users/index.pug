@@ -1,0 +1,10 @@
+extends ../layouts/page.pug
+
+block content
+  h1 Users
+
+  a(href="/users/new") Add user
+
+  ul
+    each user in users
+      li #{user.name} (#{user.email})
