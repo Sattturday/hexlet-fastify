@@ -43,9 +43,21 @@ export const buildApp = async () => {
 
   // Маршрут для списка курсов (уже есть в вашем коде)
   app.get('/courses', (req, res) => {
+    const term = req.query.term || ''
+    const normalizedTerm = term.toLowerCase()
+
+    const courses = state.courses.filter((course) => {
+      const titleMatch = course.title.toLowerCase().includes(normalizedTerm)
+      const descriptionMatch = course.description.toLowerCase().includes(normalizedTerm)
+
+      return titleMatch || descriptionMatch
+    })
+
     const data = {
-      courses: state.courses,
+      term,
+      courses,
     }
+
     res.view('src/views/courses/index', data)
   })
 
