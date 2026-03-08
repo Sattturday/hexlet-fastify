@@ -2,11 +2,7 @@ import fastify from 'fastify'
 import view from '@fastify/view'
 import pug from 'pug'
 
-const app = fastify()
 const port = 5000
-
-// Подключаем pug через плагин
-await app.register(view, { engine: { pug } })
 
 const state = {
   courses: [
@@ -23,33 +19,63 @@ const state = {
   ],
 }
 
-// Маршрут для главной страницы
-app.get('/', (req, res) => {
-  res.view('src/views/index')
-})
-
-// Маршрут для списка курсов (уже есть в вашем коде)
-app.get('/courses', (req, res) => {
-  const data = {
-    courses: state.courses,
+const parseCourseId = (rawId) => {
+  if (!/^\d+$/.test(rawId)) {
+    return null
   }
-  res.view('src/views/courses/index', data)
-})
 
-// Маршрут для отдельного курса (уже есть в вашем коде)
-app.get('/courses/:id', (req, res) => {
-  const { id } = req.params
-  const course = state.courses.find(({ id: courseId }) => courseId === parseInt(id))
-  if (!course) {
-    res.code(404).send({ message: 'Course not found' })
-    return
-  }
-  const data = {
-    course,
-  }
-  res.view('src/views/courses/show', data)
-})
+  const id = Number(rawId)
 
-app.listen({ port }, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  return Number.isSafeInteger(id) ? id : null
+}
+
+export const buildApp = async () => {
+  const app = fastify()
+
+  // Подключаем pug через плагин
+  await app.register(view, { engine: { pug } })
+
+  // Маршрут для главной страницы
+  app.get('/', (req, res) => {
+    res.view('src/views/index')
+  })
+
+  // Маршрут для списка курсов (уже есть в вашем коде)
+  app.get('/courses', (req, res) => {
+    const data = {
+      courses: state.courses,
+    }
+    res.view('src/views/courses/index', data)
+  })
+
+  // Маршрут для отдельного курса (уже есть в вашем коде)
+  app.get('/courses/:id', (req, res) => {
+    const courseId = parseCourseId(req.params.id)
+
+    if (courseId === null) {
+      res.code(400).send({ message: 'Course id must be a positive integer' })
+      return
+    }
+
+    const course = state.courses.find(({ id }) => id === courseId)
+
+    if (!course) {
+      res.code(404).send({ message: 'Course not found' })
+      return
+    }
+
+    const data = {
+      course,
+    }
+    res.view('src/views/courses/show', data)
+  })
+
+  return app
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const app = await buildApp()
+  app.listen({ port }, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
+}
