@@ -1,5 +1,5 @@
 import fastify from 'fastify'
-import sanitizeHtml from 'sanitize-html'
+import * as yup from 'yup'
 import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import pug from 'pug'
@@ -90,11 +90,39 @@ export const buildApp = async () => {
     res.view('src/views/courses/new')
   })
 
-  app.post('/courses', (req, res) => {
+  app.post('/courses', {
+    attachValidation: true,
+    schema: {
+      body: yup.object({
+        title: yup.string().min(2, 'Title must contain at least 2 characters'),
+        description: yup.string().min(10, 'Description must contain at least 10 characters'),
+      }),
+    },
+    validatorCompiler: ({ schema }) => (data) => {
+      try {
+        const result = schema.validateSync(data)
+        return { value: result }
+      }
+      catch (e) {
+        return { error: e }
+      }
+    },
+  }, (req, res) => {
+    const { title, description } = req.body
+
+    if (req.validationError) {
+      res.view('src/views/courses/new', {
+        title,
+        description,
+        error: req.validationError,
+      })
+      return
+    }
+
     const course = {
       id: state.courses.length + 1,
-      title: req.body.title.trim(),
-      description: req.body.description.trim(),
+      title: title.trim(),
+      description: description.trim(),
     }
 
     state.courses.push(course)
@@ -108,11 +136,54 @@ export const buildApp = async () => {
     })
   })
 
-  app.post('/users', (req, res) => {
+  app.post('/users', {
+    attachValidation: true,
+    schema: {
+      body: yup.object({
+        name: yup.string().min(2, 'Name must contain at least 2 characters'),
+        email: yup.string().email('Invalid email'),
+        password: yup.string().min(5, 'Password must contain at least 5 characters'),
+        passwordConfirmation: yup.string().min(5),
+      }),
+    },
+    validatorCompiler: ({ schema }) => (data) => {
+      if (data.password !== data.passwordConfirmation) {
+        return {
+          error: Error('Password confirmation does not match'),
+        }
+      }
+
+      try {
+        const result = schema.validateSync(data)
+        return { value: result }
+      }
+      catch (e) {
+        return { error: e }
+      }
+    },
+  }, (req, res) => {
+    const {
+      name,
+      email,
+      password,
+      passwordConfirmation,
+    } = req.body
+
+    if (req.validationError) {
+      res.view('src/views/users/new', {
+        name,
+        email,
+        password,
+        passwordConfirmation,
+        error: req.validationError,
+      })
+      return
+    }
+
     const user = {
-      name: req.body.name.trim(),
-      email: req.body.email.trim().toLowerCase(),
-      password: req.body.password,
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password,
     }
 
     state.users.push(user)
