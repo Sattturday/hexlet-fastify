@@ -1,10 +1,12 @@
 import fastify from 'fastify'
 import pug from 'pug'
 import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes'
+import fastifySession from '@fastify/session'
 import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import fastifyCookie from '@fastify/cookie'
 
+import sessionRoutes from './routes/session.js'
 import usersRoutes from './routes/users.js'
 import coursesRoutes from './routes/courses.js'
 import rootRoutes from './routes/root.js'
@@ -42,8 +44,14 @@ export const buildApp = async () => {
   const app = fastify({ exposeHeadRoutes: false })
 
   await app.register(formbody)
-  await app.register(fastifyReverseRoutes)
   await app.register(fastifyCookie)
+
+  await app.register(fastifySession, {
+    secret: 'a-very-long-secret-key-with-32-chars',
+    cookie: { secure: false },
+  })
+
+  await app.register(fastifyReverseRoutes)
 
   const route = (name, params = {}) => app.reverse(name, params)
 
@@ -53,6 +61,7 @@ export const buildApp = async () => {
     defaultContext: { route },
   })
 
+  await app.register(sessionRoutes)
   await app.register(rootRoutes)
   await app.register(usersRoutes)
   await app.register(coursesRoutes)
