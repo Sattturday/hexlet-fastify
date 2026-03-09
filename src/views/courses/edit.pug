@@ -30,14 +30,22 @@ block content
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 14px;
+      box-sizing: border-box;
     }
     
     textarea {
-      min-height: 100px;
+      min-height: 150px;
       font-family: inherit;
     }
     
-    button {
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .save-btn {
       background-color: #0066cc;
       color: white;
       padding: 10px 20px;
@@ -47,22 +55,33 @@ block content
       font-size: 14px;
     }
     
-    button:hover {
+    .save-btn:hover {
       background-color: #0052a3;
     }
+    
+    .cancel-link {
+      color: #666;
+      text-decoration: none;
+    }
+    
+    .cancel-link:hover {
+      text-decoration: underline;
+    }
 
-  h1 New course
+  h1 Edit course
 
   if error
     .error-message= error.message
 
-  form(action=route('createCourse') method="post")
+  form(action=`/courses/${course.id}` method="post")
     .form-group
       label Title
-      input(type="text" name="title" value=title)
+      input(type="text" name="title" value=course.title)
 
     .form-group
       label Description
-      textarea(name="description")= description
+      textarea(name="description")= course.description
 
-    button(type="submit") Create course
+    .button-group
+      button.save-btn(type="submit") Save
+      a.cancel-link(href=`/courses/${course.id}`) Cancel

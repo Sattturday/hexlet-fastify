@@ -57,11 +57,14 @@ block content
       border-color: #f44336;
     }
     
-    .password-hint {
-      color: #666;
-      font-size: 0.85em;
+    .readonly-hint {
+      background-color: #f9f9f9;
+      padding: 8px 12px;
+      border-radius: 4px;
       margin-top: 5px;
-      font-style: italic;
+      font-size: 0.85em;
+      color: #666;
+      border: 1px dashed #ccc;
     }
     
     .button-group {
@@ -71,8 +74,8 @@ block content
       align-items: center;
     }
     
-    .submit-button {
-      background-color: #4CAF50;
+    .save-button {
+      background-color: #2196F3;
       color: white;
       border: none;
       padding: 12px 24px;
@@ -83,8 +86,8 @@ block content
       transition: background-color 0.3s;
     }
     
-    .submit-button:hover {
-      background-color: #45a049;
+    .save-button:hover {
+      background-color: #1976D2;
     }
     
     .cancel-link {
@@ -99,45 +102,62 @@ block content
       background-color: #f5f5f5;
     }
     
-    .field-hint {
-      color: #666;
-      font-size: 0.85em;
-      margin-top: 5px;
+    .delete-link {
+      margin-left: auto;
+      color: #f44336;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
     }
     
-    /* Стили для валидации пароля */
-    .password-strength {
-      margin-top: 8px;
-      height: 4px;
-      background-color: #f0f0f0;
-      border-radius: 2px;
-      overflow: hidden;
+    .delete-link:hover {
+      background-color: #ffebee;
     }
     
-    .password-strength-bar {
-      height: 100%;
-      width: 0;
-      transition: width 0.3s, background-color 0.3s;
+    .user-info {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 25px;
+      border-left: 4px solid #2196F3;
+    }
+    
+    .user-info-item {
+      margin: 5px 0;
+      color: #555;
+    }
+    
+    .user-info-label {
+      font-weight: 600;
+      color: #333;
+      min-width: 60px;
+      display: inline-block;
     }
 
   .form-container
-    h1 Create new account
+    h1 Edit user
 
     if error
       .error-message
         strong Error: 
         = error.message
 
-    form(action="/users" method="post" autocomplete="off")
+    // Информация о пользователе для контекста
+    .user-info
+      .user-info-item
+        span.user-info-label ID:
+        span  #{user.id}
+
+    form(action=`/users/${user.id}?_method=PATCH` method="post")
       .form-group
         label(for="name") Full name
         input(
           type="text" 
           id="name"
           name="name" 
-          value=name
+          value=user.name
           placeholder="John Doe"
-          autocomplete="off"
           class=error && error.field === 'name' ? 'error' : ''
         )
 
@@ -147,35 +167,12 @@ block content
           type="email" 
           id="email"
           name="email" 
-          value=email
+          value=user.email
           placeholder="john@example.com"
-          autocomplete="off"
           class=error && error.field === 'email' ? 'error' : ''
         )
-
-      .form-group
-        label(for="password") Password
-        input(
-          type="password" 
-          id="password"
-          name="password"
-          placeholder="••••••••"
-          autocomplete="new-password"
-          class=error && error.field === 'password' ? 'error' : ''
-        )
-        .password-hint Min. 8 characters with letters and numbers
-
-      .form-group
-        label(for="passwordConfirmation") Confirm password
-        input(
-          type="password" 
-          id="passwordConfirmation"
-          name="passwordConfirmation"
-          placeholder="••••••••"
-          autocomplete="new-password"
-          class=error && error.field === 'passwordConfirmation' ? 'error' : ''
-        )
+        .readonly-hint Changing email will require verification
 
       .button-group
-        button.submit-button(type="submit") Create account
-        a.cancel-link(href="/users") Cancel
+        button.save-button(type="submit") Save changes
+        a.cancel-link(href=`/users/${user.id}`) Cancel

@@ -1,20 +1,80 @@
 extends ../layouts/page.pug
 
 block content
+  style.
+    .course-card {
+      background-color: #f9f9f9;
+      padding: 25px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .course-description {
+      line-height: 1.6;
+      color: #444;
+    }
+    
+    .course-meta {
+      color: #666;
+      font-size: 0.9em;
+      padding-top: 15px;
+      margin-top: 15px;
+      border-top: 1px solid #ddd;
+    }
+    
+    .actions {
+      margin-top: 25px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-right: 8px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-list {
+      background-color: #0066cc;
+      color: white;
+    }
+    
+    .btn-edit {
+      background-color: #ffc107;
+      color: #333;
+    }
+    
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    
+    .not-found {
+      color: #666;
+      font-style: italic;
+    }
+
   if course
     h2 #{course.title}
-    div(style='background-color: #f9f9f9; padding: 20px; border-radius: 8px;')
-      p 
-        strong Описание: 
-        | #{course.description}
-      p 
-        strong ID курса: 
-        | #{course.id}
-    
-    div(style='margin-top: 20px;')
-      a(href='/courses', style='background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;') К списку курсов
-      a(href=`/courses/${course.id}/edit`, style='background-color: #ffc107; color: #333; padding: 10px 20px; text-decoration: none; border-radius: 5px;') Редактировать
+
+    .course-card
+      p.course-description
+        strong Описание:
+        |  #{course.description}
+
+      .course-meta
+        strong ID курса:
+        |  #{course.id}
+
+    .actions
+      a.btn.btn-list(href=route('courses')) К списку курсов
+      a.btn.btn-edit(href=route('editCourse', { id: course.id })) Редактировать
+      form(action=`/courses/${course.id}` method='post' style='display:inline')
+        button.btn.btn-delete(type='submit') Удалить
   else
     h2 Курс не найден
-    p Извините, запрашиваемый курс не существует.
-    a(href='/courses', style='background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;') Вернуться к списку курсов
+    p.not-found
+      a(href=route('courses')) Вернуться к списку
