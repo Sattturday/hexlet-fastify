@@ -1,8 +1,9 @@
 import fastify from 'fastify'
-import formbody from '@fastify/formbody'
-import view from '@fastify/view'
 import pug from 'pug'
 import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes'
+import formbody from '@fastify/formbody'
+import view from '@fastify/view'
+import fastifyCookie from '@fastify/cookie'
 
 import usersRoutes from './routes/users.js'
 import coursesRoutes from './routes/courses.js'
@@ -42,6 +43,7 @@ export const buildApp = async () => {
 
   await app.register(formbody)
   await app.register(fastifyReverseRoutes)
+  await app.register(fastifyCookie)
 
   const route = (name, params = {}) => app.reverse(name, params)
 

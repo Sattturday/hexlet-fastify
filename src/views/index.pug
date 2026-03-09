@@ -2,7 +2,11 @@ extends layouts/page.pug
 
 block content
   h2 Добро пожаловать в учебный центр!
-  
+
+  if !visited
+    div(style='padding: 15px; background:#fff3cd; border-radius:8px; margin-bottom:20px;')
+      | Это сообщение показывается только один раз. Чтобы увидеть снова — очистите cookies.
+
   div(style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;')
     div(style='padding: 20px; background-color: #e3f2fd; border-radius: 8px;')
       h3 О нас

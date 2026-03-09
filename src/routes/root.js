@@ -1,5 +1,9 @@
 export default async (app) => {
-  app.get('/', (req, res) => {
-    res.view('index')
+  app.get('/', { name: 'root' }, (req, res) => {
+    const visited = req.cookies.visited
+
+    res.cookie('visited', true)
+
+    res.view('index', { visited })
   })
 }
