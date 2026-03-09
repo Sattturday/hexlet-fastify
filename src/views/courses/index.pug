@@ -2,7 +2,7 @@ extends ../layouts/page.pug
 
 block content
   h2 Список курсов
-  a(href='/courses/new', style='display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-bottom: 20px;') Создать новый курс
+  a(href=route('newCourse'), style='display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-bottom: 20px;') Создать новый курс
 
   form(role = 'form' method = 'GET' action = '/courses')
     input(type = 'search', name = 'term', value = term)

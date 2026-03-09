@@ -1,5 +1,6 @@
 import fastify from 'fastify'
 import * as yup from 'yup'
+import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes'
 import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import pug from 'pug'
@@ -33,11 +34,20 @@ const parseCourseId = (rawId) => {
 }
 
 export const buildApp = async () => {
-  const app = fastify()
+  const app = fastify({ exposeHeadRoutes: false })
 
   // подключаем плагины 
-  await app.register(view, { engine: { pug } })
   await app.register(formbody)
+  await app.register(fastifyReverseRoutes)
+
+  const route = (name, params = {}) => app.reverse(name, params)
+
+  await app.register(view, {
+    engine: { pug },
+    defaultContext: {
+      route,
+    },
+  })
 
   // Маршрут для главной страницы
   app.get('/', (req, res) => {
@@ -45,7 +55,7 @@ export const buildApp = async () => {
   })
 
   // Маршрут для списка курсов (уже есть в вашем коде)
-  app.get('/courses', (req, res) => {
+  app.get('/courses', { name: 'courses' }, (req, res) => {
     const term = req.query.term || ''
     const normalizedTerm = term.toLowerCase()
 
@@ -65,7 +75,7 @@ export const buildApp = async () => {
   })
 
   // Маршрут для отдельного курса (уже есть в вашем коде)
-  app.get('/courses/:id', (req, res) => {
+  app.get('/courses/:id', { name: 'course' }, (req, res) => {
     const courseId = parseCourseId(req.params.id)
 
     if (courseId === null) {
@@ -86,11 +96,12 @@ export const buildApp = async () => {
     res.view('src/views/courses/show', data)
   })
 
-  app.get('/courses/new', (req, res) => {
+  app.get('/courses/new', { name: 'newCourse' }, (req, res) => {
     res.view('src/views/courses/new')
   })
 
   app.post('/courses', {
+    name: 'createCourse',
     attachValidation: true,
     schema: {
       body: yup.object({
@@ -127,16 +138,17 @@ export const buildApp = async () => {
 
     state.courses.push(course)
 
-    res.redirect('/courses')
+    res.redirect(route('courses'))
   })
 
-  app.get('/users', (req, res) => {
+  app.get('/users', { name: 'users' }, (req, res) => {
     res.view('src/views/users/index', {
       users: state.users,
     })
   })
 
   app.post('/users', {
+    name: 'createUser',
     attachValidation: true,
     schema: {
       body: yup.object({
@@ -149,7 +161,7 @@ export const buildApp = async () => {
     validatorCompiler: ({ schema }) => (data) => {
       if (data.password !== data.passwordConfirmation) {
         return {
-          error: Error('Password confirmation does not match'),
+          error: new Error('Password confirmation does not match'),
         }
       }
 
@@ -188,10 +200,10 @@ export const buildApp = async () => {
 
     state.users.push(user)
 
-    res.redirect('/users')
+    res.redirect(route('users'))
   })
 
-  app.get('/users/new', (req, res) => {
+  app.get('/users/new', { name: 'newUser' }, (req, res) => {
     res.view('src/views/users/new')
   })
 
