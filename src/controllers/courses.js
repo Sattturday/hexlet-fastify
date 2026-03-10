@@ -21,9 +21,11 @@ export const index = (req, res) => {
     return titleMatch || descriptionMatch
   })
 
+  const messages = res.flash()
   res.view('courses/index', {
     courses,
     term,
+    flash: messages,
   })
 }
 
@@ -69,9 +71,11 @@ export const edit = (req, res) => {
 
 export const create = (req, res) => {
   if (req.validationError) {
+    req.flash('error', req.validationError.message)
     res.view('courses/new', {
       ...req.body,
       error: req.validationError,
+      flash: res.flash(),
     })
     return
   }
@@ -86,6 +90,7 @@ export const create = (req, res) => {
 
   state.courses.push(course)
 
+  req.flash('success', 'Course has been created')
   res.redirect('/courses')
 }
 

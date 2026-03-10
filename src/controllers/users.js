@@ -1,8 +1,10 @@
 import { state } from '../index.js'
 
 export const index = (req, res) => {
+  const messages = res.flash()
   res.view('users/index', {
     users: state.users,
+    flash: messages,
   })
 }
 
@@ -43,12 +45,14 @@ export const create = (req, res) => {
   } = req.body
 
   if (req.validationError) {
+    req.flash('error', req.validationError.message)
     res.view('users/new', {
       name,
       email,
       password,
       passwordConfirmation,
       error: req.validationError,
+      flash: res.flash(),
     })
     return
   }
@@ -62,6 +66,7 @@ export const create = (req, res) => {
 
   state.users.push(user)
 
+  req.flash('success', 'User has been created')
   res.redirect('/users')
 }
 

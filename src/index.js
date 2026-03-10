@@ -5,6 +5,7 @@ import fastifySession from '@fastify/session'
 import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import fastifyCookie from '@fastify/cookie'
+import fastifyFlash from '@fastify/flash'
 
 import sessionRoutes from './routes/session.js'
 import usersRoutes from './routes/users.js'
@@ -50,6 +51,8 @@ export const buildApp = async () => {
     secret: 'a-very-long-secret-key-with-32-chars',
     cookie: { secure: false },
   })
+
+  await app.register(fastifyFlash)
 
   await app.register(fastifyReverseRoutes)
 
