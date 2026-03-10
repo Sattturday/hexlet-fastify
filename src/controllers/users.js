@@ -45,14 +45,12 @@ export const create = (req, res) => {
   } = req.body
 
   if (req.validationError) {
-    req.flash('error', req.validationError.message)
     res.view('users/new', {
       name,
       email,
       password,
       passwordConfirmation,
       error: req.validationError,
-      flash: res.flash(),
     })
     return
   }
@@ -82,11 +80,9 @@ export const update = (req, res) => {
 
   if (req.validationError) {
     const user = { ...state.users[index], ...req.body }
-    req.flash('error', req.validationError.message)
     res.view('users/edit', {
       user,
       error: req.validationError,
-      flash: res.flash(),
     })
     return
   }

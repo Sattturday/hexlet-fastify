@@ -71,11 +71,9 @@ export const edit = (req, res) => {
 
 export const create = (req, res) => {
   if (req.validationError) {
-    req.flash('error', req.validationError.message)
     res.view('courses/new', {
       ...req.body,
       error: req.validationError,
-      flash: res.flash(),
     })
     return
   }
@@ -111,11 +109,9 @@ export const update = (req, res) => {
 
   if (req.validationError) {
     const course = { ...state.courses[index], ...req.body }
-    req.flash('error', req.validationError.message)
     res.view('courses/edit', {
       course,
       error: req.validationError,
-      flash: res.flash(),
     })
     return
   }
