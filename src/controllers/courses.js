@@ -109,6 +109,17 @@ export const update = (req, res) => {
     return
   }
 
+  if (req.validationError) {
+    const course = { ...state.courses[index], ...req.body }
+    req.flash('error', req.validationError.message)
+    res.view('courses/edit', {
+      course,
+      error: req.validationError,
+      flash: res.flash(),
+    })
+    return
+  }
+
   const { title, description } = req.body
 
   state.courses[index] = {

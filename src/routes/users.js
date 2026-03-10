@@ -8,6 +8,11 @@ const userSchema = yup.object({
   passwordConfirmation: yup.string().min(5),
 })
 
+const userEditSchema = yup.object({
+  name: yup.string().min(2, 'Name must contain at least 2 characters'),
+  email: yup.string().email('Invalid email'),
+})
+
 const validatorCompiler = ({ schema }) => (data) => {
   if (data.password !== data.passwordConfirmation) {
     return {
@@ -42,9 +47,14 @@ export default async (app) => {
     validatorCompiler,
   }, usersController.create)
 
-  app.post('/users/:id', { name: 'updateUser' }, usersController.update)
+  app.post('/users/:id', {
+    name: 'updateUser',
+    attachValidation: true,
+    schema: {
+      body: userEditSchema,
+    },
+    validatorCompiler,
+  }, usersController.update)
 
   app.delete('/users/:id', { name: 'deleteUser' }, usersController.destroy)
 }
-
-//todo добавить валидацию при редактировании пользователя

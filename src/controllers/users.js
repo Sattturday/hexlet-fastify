@@ -80,6 +80,17 @@ export const update = (req, res) => {
     return
   }
 
+  if (req.validationError) {
+    const user = { ...state.users[index], ...req.body }
+    req.flash('error', req.validationError.message)
+    res.view('users/edit', {
+      user,
+      error: req.validationError,
+      flash: res.flash(),
+    })
+    return
+  }
+
   state.users[index] = {
     ...state.users[index],
     name: req.body.name,
