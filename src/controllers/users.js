@@ -7,10 +7,8 @@ export const index = (req, res) => {
       return
     }
 
-    const messages = res.flash()
     res.view('users/index', {
       users,
-      flash: messages,
     })
   })
 }

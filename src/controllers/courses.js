@@ -22,11 +22,9 @@ export const index = (req, res) => {
       return
     }
 
-    const messages = res.flash()
     res.view('courses/index', {
       courses,
       term,
-      flash: messages,
     })
   })
 }

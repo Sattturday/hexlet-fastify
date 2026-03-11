@@ -115,6 +115,21 @@ export const buildApp = async () => {
     }
   })
 
+  const publicPaths = new Set(['/', '/session/new', '/session', '/session/delete'])
+
+  app.addHook('preHandler', (req, res, done) => {
+    if (res.locals.currentUser || publicPaths.has(req.url.split('?')[0])) {
+      return done()
+    }
+    req.flash('error', 'Требуется авторизация')
+    return res.redirect('/')
+  })
+
+  app.addHook('preHandler', (req, res, done) => {
+    res.locals = { ...res.locals, flash: res.flash() }
+    done()
+  })
+
   await app.register(sessionRoutes)
   await app.register(rootRoutes)
   await app.register(usersRoutes)
