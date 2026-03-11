@@ -16,4 +16,9 @@ export default async (app) => {
       res.redirect('/')
     })
   })
+
+  app.post('/session/delete', { name: 'deleteSession' }, (req, res) => {
+    req.session.destroy()
+    res.redirect('/')
+  })
 }

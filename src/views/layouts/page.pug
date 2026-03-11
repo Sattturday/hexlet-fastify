@@ -112,7 +112,13 @@ html
                 a(href='/courses') Курсы
               li
                 a(href='/users') Пользователи
-          a.login(href="/session/new") Войти
+          if currentUser
+            span.login #{currentUser.name} |
+              |
+              form(action=route('deleteSession') method='post' style='display:inline')
+                button.login(type='submit' style='background:none;border:none;cursor:pointer;font:inherit;color:inherit;font-weight:700;padding:0') Выйти
+          else
+            a.login(href=route('newSession')) Войти
     main.main
       .container
         block content

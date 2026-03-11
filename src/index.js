@@ -102,6 +102,19 @@ export const buildApp = async () => {
     defaultContext: { route },
   })
 
+  app.addHook('preHandler', (req, res, done) => {
+    const { userId } = req.session
+    if (userId) {
+      db.get('SELECT * FROM users WHERE id = ?', [userId], (error, user) => {
+        res.locals = { ...res.locals, currentUser: user || null }
+        done()
+      })
+    } else {
+      res.locals = { ...res.locals, currentUser: null }
+      done()
+    }
+  })
+
   await app.register(sessionRoutes)
   await app.register(rootRoutes)
   await app.register(usersRoutes)
