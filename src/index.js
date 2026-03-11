@@ -15,7 +15,7 @@ import sqlite3 from 'sqlite3'
 
 export const db = new sqlite3.Database(':memory:')
 
-const port = 5000
+const port = process.env.PORT || 5000
 
 export const state = {
   users: [
@@ -86,7 +86,7 @@ export const buildApp = async () => {
   await app.register(fastifyCookie)
 
   await app.register(fastifySession, {
-    secret: 'a-very-long-secret-key-with-32-chars',
+    secret: process.env.SESSION_SECRET || 'a-very-long-secret-key-with-32-chars',
     cookie: { secure: false },
   })
 
@@ -125,7 +125,7 @@ export const buildApp = async () => {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const app = await buildApp()
-  app.listen({ port }, () => {
+  app.listen({ port, host: '0.0.0.0' }, () => {
     console.log(`Example app listening on port ${port}`)
   })
 }
