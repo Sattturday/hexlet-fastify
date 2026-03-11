@@ -1,4 +1,4 @@
-import { state } from '../index.js'
+import { db } from '../index.js'
 
 export default async (app) => {
   app.get('/session/new', { name: 'newSession' }, (req, res) => {
@@ -8,12 +8,12 @@ export default async (app) => {
   app.post('/session', { name: 'session' }, (req, res) => {
     const { email } = req.body
 
-    const user = state.users.find((u) => u.email === email)
+    db.get('SELECT * FROM users WHERE email = ?', [email], (error, user) => {
+      if (user) {
+        req.session.userId = user.id
+      }
 
-    if (user) {
-      req.session.userId = user.id
-    }
-
-    res.redirect('/')
+      res.redirect('/')
+    })
   })
 }

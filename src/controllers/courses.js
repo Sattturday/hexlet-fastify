@@ -1,4 +1,4 @@
-import { state } from '../index.js'
+import { db } from '../index.js'
 
 const parseCourseId = (rawId) => {
   if (!/^\d+$/.test(rawId)) {
@@ -12,20 +12,22 @@ const parseCourseId = (rawId) => {
 
 export const index = (req, res) => {
   const term = req.query.term || ''
-  const normalizedTerm = term.toLowerCase()
+  const normalizedTerm = `%${term.toLowerCase()}%`
 
-  const courses = state.courses.filter((course) => {
-    const titleMatch = course.title.toLowerCase().includes(normalizedTerm)
-    const descriptionMatch = course.description.toLowerCase().includes(normalizedTerm)
+  const sql = 'SELECT * FROM courses WHERE LOWER(title) LIKE ? OR LOWER(description) LIKE ?'
 
-    return titleMatch || descriptionMatch
-  })
+  db.all(sql, [normalizedTerm, normalizedTerm], (error, courses) => {
+    if (error) {
+      res.code(500).send({ message: 'Database error' })
+      return
+    }
 
-  const messages = res.flash()
-  res.view('courses/index', {
-    courses,
-    term,
-    flash: messages,
+    const messages = res.flash()
+    res.view('courses/index', {
+      courses,
+      term,
+      flash: messages,
+    })
   })
 }
 
@@ -37,14 +39,19 @@ export const show = (req, res) => {
     return
   }
 
-  const course = state.courses.find((c) => c.id === id)
+  db.get('SELECT * FROM courses WHERE id = ?', [id], (error, course) => {
+    if (error) {
+      res.code(500).send({ message: 'Database error' })
+      return
+    }
 
-  if (!course) {
-    res.code(404).send({ message: 'Course not found' })
-    return
-  }
+    if (!course) {
+      res.code(404).send({ message: 'Course not found' })
+      return
+    }
 
-  res.view('courses/show', { course })
+    res.view('courses/show', { course })
+  })
 }
 
 export const newCourse = (req, res) => {
@@ -59,14 +66,19 @@ export const edit = (req, res) => {
     return
   }
 
-  const course = state.courses.find((c) => c.id === id)
+  db.get('SELECT * FROM courses WHERE id = ?', [id], (error, course) => {
+    if (error) {
+      res.code(500).send({ message: 'Database error' })
+      return
+    }
 
-  if (!course) {
-    res.code(404).send({ message: 'Course not found' })
-    return
-  }
+    if (!course) {
+      res.code(404).send({ message: 'Course not found' })
+      return
+    }
 
-  res.view('courses/edit', { course })
+    res.view('courses/edit', { course })
+  })
 }
 
 export const create = (req, res) => {
@@ -80,16 +92,19 @@ export const create = (req, res) => {
 
   const { title, description } = req.body
 
-  const course = {
-    id: state.courses.length + 1,
-    title: title.trim(),
-    description: description.trim(),
-  }
+  const stmt = db.prepare('INSERT INTO courses (title, description) VALUES (?, ?)')
+  stmt.run([title.trim(), description.trim()], function (error) {
+    if (error) {
+      res.view('courses/new', {
+        ...req.body,
+        error,
+      })
+      return
+    }
 
-  state.courses.push(course)
-
-  req.flash('success', 'Course has been created')
-  res.redirect('/courses')
+    req.flash('success', 'Course has been created')
+    res.redirect(`/courses`)
+  })
 }
 
 export const update = (req, res) => {
@@ -100,31 +115,37 @@ export const update = (req, res) => {
     return
   }
 
-  const index = state.courses.findIndex((c) => c.id === id)
+  db.get('SELECT * FROM courses WHERE id = ?', [id], (error, course) => {
+    if (error) {
+      res.code(500).send({ message: 'Database error' })
+      return
+    }
 
-  if (index === -1) {
-    res.code(404).send({ message: 'Course not found' })
-    return
-  }
+    if (!course) {
+      res.code(404).send({ message: 'Course not found' })
+      return
+    }
 
-  if (req.validationError) {
-    const course = { ...state.courses[index], ...req.body }
-    res.view('courses/edit', {
-      course,
-      error: req.validationError,
+    if (req.validationError) {
+      res.view('courses/edit', {
+        course: { ...course, ...req.body },
+        error: req.validationError,
+      })
+      return
+    }
+
+    const { title, description } = req.body
+
+    const stmt = db.prepare('UPDATE courses SET title = ?, description = ? WHERE id = ?')
+    stmt.run([title.trim(), description.trim(), id], (err) => {
+      if (err) {
+        res.code(500).send({ message: 'Database error' })
+        return
+      }
+      req.flash('success', 'Course has been updated')
+      res.redirect('/courses')
     })
-    return
-  }
-
-  const { title, description } = req.body
-
-  state.courses[index] = {
-    ...state.courses[index],
-    title: title.trim(),
-    description: description.trim(),
-  }
-
-  res.redirect('/courses')
+  })
 }
 
 export const destroy = (req, res) => {
@@ -135,14 +156,12 @@ export const destroy = (req, res) => {
     return
   }
 
-  const index = state.courses.findIndex((c) => c.id === id)
-
-  if (index === -1) {
-    res.code(404).send({ message: 'Course not found' })
-    return
-  }
-
-  state.courses.splice(index, 1)
-
-  res.redirect('/courses')
+  const stmt = db.prepare('DELETE FROM courses WHERE id = ?')
+  stmt.run(id, (err) => {
+    if (err) {
+      res.send(err)
+      return
+    }
+    res.redirect('/courses')
+  })
 }

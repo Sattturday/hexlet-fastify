@@ -11,6 +11,9 @@ import sessionRoutes from './routes/session.js'
 import usersRoutes from './routes/users.js'
 import coursesRoutes from './routes/courses.js'
 import rootRoutes from './routes/root.js'
+import sqlite3 from 'sqlite3'
+
+export const db = new sqlite3.Database(':memory:')
 
 const port = 5000
 
@@ -40,6 +43,41 @@ export const state = {
     },
   ],
 }
+
+const prepareDatabase = () => {
+  db.serialize(() => {
+    db.run(`
+      CREATE TABLE courses (
+        id INTEGER PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT
+      );
+    `)
+
+    db.run(`
+      CREATE TABLE users (
+        id INTEGER PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        password VARCHAR(255)
+      );
+    `)
+
+    const stmtCourses = db.prepare('INSERT INTO courses (id, title, description) VALUES (?, ?, ?)')
+    state.courses.forEach((course) => {
+      stmtCourses.run(course.id, course.title, course.description)
+    })
+    stmtCourses.finalize()
+
+    const stmtUsers = db.prepare('INSERT INTO users (id, name, email) VALUES (?, ?, ?)')
+    state.users.forEach((user) => {
+      stmtUsers.run(user.id, user.name, user.email)
+    })
+    stmtUsers.finalize()
+  })
+}
+
+prepareDatabase()
 
 export const buildApp = async () => {
   const app = fastify({ exposeHeadRoutes: false })
