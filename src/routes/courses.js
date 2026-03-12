@@ -3,8 +3,8 @@ import * as coursesController from '../controllers/courses.js'
 import { validatorCompiler } from '../lib/validatorCompiler.js'
 
 const courseSchema = yup.object({
-  title: yup.string().min(2, 'Title must contain at least 2 characters'),
-  description: yup.string().min(10, 'Description must contain at least 10 characters'),
+  title: yup.string().min(2, 'Название должно содержать минимум 2 символа'),
+  description: yup.string().min(10, 'Описание должно содержать минимум 10 символов'),
 })
 
 export default async (app) => {

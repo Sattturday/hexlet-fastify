@@ -4,7 +4,7 @@ import { db } from '../index.js'
 export const index = (req, res) => {
   db.all('SELECT id, name, email FROM users', (error, users) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
@@ -23,12 +23,12 @@ export const show = (req, res) => {
 
   db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (error, user) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
     if (!user) {
-      res.code(404).send({ message: 'User not found' })
+      res.code(404).send({ message: 'Пользователь не найден' })
       return
     }
 
@@ -41,12 +41,12 @@ export const edit = (req, res) => {
 
   db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (error, user) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
     if (!user) {
-      res.code(404).send({ message: 'User not found' })
+      res.code(404).send({ message: 'Пользователь не найден' })
       return
     }
 
@@ -59,7 +59,6 @@ export const create = async (req, res) => {
     name,
     email,
     password,
-    passwordConfirmation,
   } = req.body
 
   if (req.validationError) {
@@ -85,7 +84,7 @@ export const create = async (req, res) => {
         return
       }
 
-      req.flash('success', 'User has been created')
+      req.flash('success', 'Пользователь успешно создан')
       res.redirect('/session/new')
       resolve()
     })
@@ -97,12 +96,12 @@ export const update = (req, res) => {
 
   db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (error, user) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
     if (!user) {
-      res.code(404).send({ message: 'User not found' })
+      res.code(404).send({ message: 'Пользователь не найден' })
       return
     }
 
@@ -117,10 +116,10 @@ export const update = (req, res) => {
     const stmt = db.prepare('UPDATE users SET name = ?, email = ? WHERE id = ?')
     stmt.run([req.body.name, req.body.email, id], (err) => {
       if (err) {
-        res.code(500).send({ message: 'Database error' })
+        res.code(500).send({ message: 'Ошибка базы данных' })
         return
       }
-      req.flash('success', 'User has been updated')
+      req.flash('success', 'Пользователь успешно обновлён')
       res.redirect('/users')
     })
   })
@@ -132,7 +131,7 @@ export const destroy = (req, res) => {
   const stmt = db.prepare('DELETE FROM users WHERE id = ?')
   stmt.run(id, (err) => {
     if (err) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
     res.redirect('/users')

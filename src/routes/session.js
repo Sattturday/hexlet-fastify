@@ -32,9 +32,13 @@ export default async (app) => {
         if (error) return reject(error)
         resolve(row)
       })
-    }).catch(() => null)
+    }).catch((err) => {
+      req.log.error(err, 'DB error during login')
+      return null
+    })
 
     if (user && await bcrypt.compare(password, user.password)) {
+      await req.session.regenerate()
       req.session.userId = user.id
       return res.redirect('/')
     }
