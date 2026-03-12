@@ -7,11 +7,13 @@ import view from '@fastify/view'
 import fastifyCookie from '@fastify/cookie'
 import fastifyFlash from '@fastify/flash'
 
+import bcrypt from 'bcrypt'
+import sqlite3 from 'sqlite3'
+
 import sessionRoutes from './routes/session.js'
 import usersRoutes from './routes/users.js'
 import coursesRoutes from './routes/courses.js'
 import rootRoutes from './routes/root.js'
-import sqlite3 from 'sqlite3'
 
 export const db = new sqlite3.Database(':memory:')
 
@@ -23,11 +25,13 @@ export const state = {
       id: 1,
       name: 'First User',
       email: 'first@user.com',
+      password: 'password',
     },
     {
       id: 2,
       name: 'Second User',
       email: 'second@user.com',
+      password: 'password',
     },
   ],
   courses: [
@@ -44,7 +48,14 @@ export const state = {
   ],
 }
 
-const prepareDatabase = () => {
+const prepareDatabase = async () => {
+  const hashedUsers = await Promise.all(
+    state.users.map(async (u) => ({
+      ...u,
+      password: await bcrypt.hash(u.password, 10),
+    }))
+  )
+
   db.serialize(() => {
     db.run(`
       CREATE TABLE courses (
@@ -69,9 +80,9 @@ const prepareDatabase = () => {
     })
     stmtCourses.finalize()
 
-    const stmtUsers = db.prepare('INSERT INTO users (id, name, email) VALUES (?, ?, ?)')
-    state.users.forEach((user) => {
-      stmtUsers.run(user.id, user.name, user.email)
+    const stmtUsers = db.prepare('INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)')
+    hashedUsers.forEach((user) => {
+      stmtUsers.run(user.id, user.name, user.email, user.password)
     })
     stmtUsers.finalize()
   })
@@ -105,7 +116,7 @@ export const buildApp = async () => {
   app.addHook('preHandler', (req, res, done) => {
     const { userId } = req.session
     if (userId) {
-      db.get('SELECT * FROM users WHERE id = ?', [userId], (error, user) => {
+      db.get('SELECT id, name, email FROM users WHERE id = ?', [userId], (error, user) => {
         res.locals = { ...res.locals, currentUser: user || null }
         done()
       })
@@ -115,10 +126,9 @@ export const buildApp = async () => {
     }
   })
 
-  const publicPaths = new Set(['/', '/session/new', '/session', '/session/delete'])
-
   app.addHook('preHandler', (req, res, done) => {
-    if (res.locals.currentUser || publicPaths.has(req.url.split('?')[0])) {
+    const { isPublic } = req.routeOptions.config || {}
+    if (res.locals.currentUser || isPublic) {
       return done()
     }
     req.flash('error', 'Требуется авторизация')
