@@ -1,93 +1,41 @@
 extends ../layouts/page.pug
 
 block content
-  style.
-    .login-container {
-      max-width: 400px;
-      margin: 40px auto;
-    }
-    
-    .login-container h2 {
-      color: #2c3e50;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    
-    .login-form {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #444;
-    }
-    
-    .form-group input {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
-      font-size: 15px;
-      transition: border-color 0.3s;
-      box-sizing: border-box;
-    }
-    
-    .form-group input:focus {
-      outline: none;
-      border-color: #0066cc;
-    }
-    
-    .login-btn {
-      width: 100%;
-      padding: 12px;
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin-top: 10px;
-    }
-    
-    .login-btn:hover {
-      background-color: #0052a3;
-    }
-    
-  .login-container
-    h2 Вход в систему
+  .row.justify-content-center
+    .col-sm-10.col-md-7.col-lg-5
 
-    .login-form
-      form(action="/session" method="post")
-        .form-group
-          label(for="email") Email
-          input(
-            type="email" 
-            id="email"
-            name="email" 
-            placeholder="example@mail.com"
-            autocomplete="email"
-          )
+      .mb-4
+        h1.h3.fw-bold.mb-1 Вход в систему
+        p.text-muted.small.mb-0 Введите данные вашего аккаунта
 
-        .form-group
-          label(for="password") Пароль
-          input(
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Введите пароль"
-            autocomplete="current-password"
-          )
+      .card
+        .card-body.p-4.p-md-5
 
-        button.login-btn(type="submit") Войти
+          form(action='/session' method='post')
+            .mb-3
+              label.form-label.fw-semibold.small(for='email') Email
+              input.form-control(
+                type='email'
+                id='email'
+                name='email'
+                placeholder='example@mail.com'
+                autocomplete='email'
+              )
 
+            .mb-4
+              label.form-label.fw-semibold.small(for='password') Пароль
+              input.form-control(
+                type='password'
+                id='password'
+                name='password'
+                placeholder='••••••••'
+                autocomplete='current-password'
+              )
+
+            .d-grid
+              button.btn.btn-primary(type='submit') Войти
+
+          hr.my-4
+          p.text-center.text-muted.small.mb-0
+            | Ещё нет аккаунта?&nbsp;
+            a.fw-semibold(href='/users/new' style='color: var(--uc-primary);') Зарегистрироваться

@@ -18,7 +18,7 @@ export const index = (req, res) => {
 
   db.all(sql, [normalizedTerm, normalizedTerm], (error, courses) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
@@ -33,18 +33,18 @@ export const show = (req, res) => {
   const id = parseCourseId(req.params.id)
 
   if (id === null) {
-    res.code(400).send({ message: 'Course id must be a positive integer' })
+    res.code(400).send({ message: 'ID курса должен быть положительным числом' })
     return
   }
 
   db.get('SELECT * FROM courses WHERE id = ?', [id], (error, course) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
     if (!course) {
-      res.code(404).send({ message: 'Course not found' })
+      res.code(404).send({ message: 'Курс не найден' })
       return
     }
 
@@ -60,18 +60,18 @@ export const edit = (req, res) => {
   const id = parseCourseId(req.params.id)
 
   if (id === null) {
-    res.code(400).send({ message: 'Course id must be a positive integer' })
+    res.code(400).send({ message: 'ID курса должен быть положительным числом' })
     return
   }
 
   db.get('SELECT * FROM courses WHERE id = ?', [id], (error, course) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
     if (!course) {
-      res.code(404).send({ message: 'Course not found' })
+      res.code(404).send({ message: 'Курс не найден' })
       return
     }
 
@@ -100,7 +100,7 @@ export const create = (req, res) => {
       return
     }
 
-    req.flash('success', 'Course has been created')
+    req.flash('success', 'Курс успешно создан')
     res.redirect(`/courses`)
   })
 }
@@ -109,18 +109,18 @@ export const update = (req, res) => {
   const id = parseCourseId(req.params.id)
 
   if (id === null) {
-    res.code(400).send({ message: 'Course id must be a positive integer' })
+    res.code(400).send({ message: 'ID курса должен быть положительным числом' })
     return
   }
 
   db.get('SELECT * FROM courses WHERE id = ?', [id], (error, course) => {
     if (error) {
-      res.code(500).send({ message: 'Database error' })
+      res.code(500).send({ message: 'Ошибка базы данных' })
       return
     }
 
     if (!course) {
-      res.code(404).send({ message: 'Course not found' })
+      res.code(404).send({ message: 'Курс не найден' })
       return
     }
 
@@ -137,10 +137,10 @@ export const update = (req, res) => {
     const stmt = db.prepare('UPDATE courses SET title = ?, description = ? WHERE id = ?')
     stmt.run([title.trim(), description.trim(), id], (err) => {
       if (err) {
-        res.code(500).send({ message: 'Database error' })
+        res.code(500).send({ message: 'Ошибка базы данных' })
         return
       }
-      req.flash('success', 'Course has been updated')
+      req.flash('success', 'Курс успешно обновлён')
       res.redirect('/courses')
     })
   })
@@ -150,7 +150,7 @@ export const destroy = (req, res) => {
   const id = parseCourseId(req.params.id)
 
   if (id === null) {
-    res.code(400).send({ message: 'Course id must be a positive integer' })
+    res.code(400).send({ message: 'ID курса должен быть положительным числом' })
     return
   }
 

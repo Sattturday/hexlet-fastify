@@ -1,84 +1,34 @@
 extends ../layouts/page.pug
 
 block content
-  style.
-    .course-card {
-      background-color: #f9f9f9;
-      padding: 25px;
-      border-radius: 8px;
-      margin: 20px 0;
-    }
-    
-    .course-description {
-      line-height: 1.6;
-      color: #444;
-    }
-    
-    .course-meta {
-      color: #666;
-      font-size: 0.9em;
-      padding-top: 15px;
-      margin-top: 15px;
-      border-top: 1px solid #ddd;
-    }
-    
-    .actions {
-      margin-top: 25px;
-    }
-    
-    .btn {
-      display: inline-block;
-      padding: 8px 16px;
-      text-decoration: none;
-      border-radius: 4px;
-      margin-right: 8px;
-      font-size: 14px;
-      line-height: 1.5;
-      border: none;
-      cursor: pointer;
-      box-sizing: border-box;
-      vertical-align: middle;
-      font-family: inherit;
-    }
-    
-    .btn-list {
-      background-color: #0066cc;
-      color: white;
-    }
-    
-    .btn-edit {
-      background-color: #ffc107;
-      color: #333;
-    }
-    
-    .btn-delete {
-      background-color: #dc3545;
-      color: white;
-    }
-    
-    .not-found {
-      color: #666;
-      font-style: italic;
-    }
-
   if course
-    h2 #{course.title}
+    nav.mb-4(aria-label='breadcrumb')
+      ol.breadcrumb.mb-0
+        li.breadcrumb-item
+          a.text-decoration-none(href=route('courses') style='color: var(--uc-primary);') Курсы
+        li.breadcrumb-item.active(aria-current='page') #{course.title}
 
-    .course-card
-      p.course-description
-        strong Описание:
-        |  #{course.description}
+    .card.mb-4
+      .card-body.p-4.p-md-5
+        h1.h2.fw-bold.mb-3 #{course.title}
 
-      .course-meta
-        strong ID курса:
-        |  #{course.id}
+        h5.fw-semibold.mb-2.text-muted.small.text-uppercase.letter-spacing Описание
+        p.text-muted.lh-lg #{course.description}
 
-    .actions
-      a.btn.btn-list(href=route('courses')) К списку курсов
-      a.btn.btn-edit(href=route('editCourse', { id: course.id })) Редактировать
-      form(action=`/courses/${course.id}` method='post' style='display:inline')
-        button.btn.btn-delete(type='submit') Удалить
+        hr(style='border-color: var(--uc-border);')
+
+        p.text-muted.small.mb-0
+          | ID курса:&nbsp;
+          code #{course.id}
+
+    .d-flex.flex-wrap.gap-2
+      a.btn.btn-outline-secondary(href=route('courses')) Все курсы
+      a.btn.btn-primary(href=route('editCourse', { id: course.id })) Редактировать
+      form(action=`/courses/${course.id}` method='post' class='d-inline m-0')
+        button.btn.btn-outline-danger(type='submit') Удалить
+
   else
-    h2 Курс не найден
-    p.not-found
-      a(href=route('courses')) Вернуться к списку
+    .card.text-center.py-5
+      h2.h4.mb-2 Курс не найден
+      p.text-muted.mb-3 Запрашиваемый курс не существует или был удалён.
+      a.btn.btn-outline-secondary(href=route('courses')) Вернуться к списку

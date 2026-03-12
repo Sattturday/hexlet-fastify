@@ -1,68 +1,46 @@
 extends ../layouts/page.pug
 
 block content
-  style.
-    .form-container {
-      max-width: 600px;
-    }
-    
-    .error-message {
-      color: #dc3545;
-      background-color: #f8d7da;
-      padding: 10px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 5px;
-    }
-    
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    
-    textarea {
-      min-height: 100px;
-      font-family: inherit;
-    }
-    
-    button {
-      background-color: #0066cc;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    
-    button:hover {
-      background-color: #0052a3;
-    }
+  .row.justify-content-center
+    .col-sm-10.col-md-8.col-lg-7
 
-  h1 New course
+      nav.mb-4(aria-label='breadcrumb')
+        ol.breadcrumb.mb-0
+          li.breadcrumb-item
+            a.text-decoration-none(href='/courses' style='color: var(--uc-primary);') Курсы
+          li.breadcrumb-item.active(aria-current='page') Новый курс
 
-  if error
-    .error-message= error.message
+      .mb-4
+        h1.h3.fw-bold.mb-1 Новый курс
+        p.text-muted.small.mb-0 Заполните информацию о новом курсе
 
-  form(action=route('createCourse') method="post")
-    .form-group
-      label Title
-      input(type="text" name="title" value=title)
+      if error
+        .alert.alert-danger(role='alert') #{error.message}
 
-    .form-group
-      label Description
-      textarea(name="description")= description
+      .card
+        .card-body.p-4.p-md-5
 
-    button(type="submit") Create course
+          form(action=route('createCourse') method='post')
+            .mb-3
+              label.form-label.fw-semibold.small(for='title') Название курса
+              input.form-control(
+                type='text'
+                id='title'
+                name='title'
+                value=title
+                placeholder='Например: Введение в JavaScript'
+              )
+
+            .mb-4
+              label.form-label.fw-semibold.small(for='description') Описание
+              textarea.form-control(
+                id='description'
+                name='description'
+                rows='5'
+                placeholder='Краткое описание курса: для кого он, что изучите...'
+                style='resize: vertical;'
+              )= description
+
+            .d-flex.gap-2
+              button.btn.btn-primary.flex-grow-1(type='submit') Создать курс
+              a.btn.btn-outline-secondary(href='/courses') Отмена

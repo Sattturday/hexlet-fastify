@@ -117,6 +117,7 @@ export const buildApp = async () => {
     const { userId } = req.session
     if (userId) {
       db.get('SELECT id, name, email FROM users WHERE id = ?', [userId], (error, user) => {
+        if (!user) req.session.destroy()
         res.locals = { ...res.locals, currentUser: user || null }
         done()
       })
@@ -132,7 +133,7 @@ export const buildApp = async () => {
       return done()
     }
     req.flash('error', 'Требуется авторизация')
-    return res.redirect('/')
+    return res.redirect(app.reverse('newSession'))
   })
 
   app.addHook('preHandler', (req, res, done) => {
