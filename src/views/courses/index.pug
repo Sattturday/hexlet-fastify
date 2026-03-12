@@ -1,129 +1,46 @@
 extends ../layouts/page.pug
 
 block content
-  style.
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .create-btn {
-      display: inline-block;
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    
-    .search-form {
-      margin-bottom: 20px;
-    }
-    
-    .search-form input {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px 0 0 4px;
-      font-size: 14px;
-    }
-    
-    .search-form button {
-      padding: 8px 16px;
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      border-radius: 0 4px 4px 0;
-      cursor: pointer;
-      font-size: 14px;
-      margin-left: -4px;
-    }
-    
-    .courses-grid {
-      display: grid;
-      gap: 20px;
-      margin-top: 20px;
-    }
-    
-    .course-card {
-      border: 1px solid #ddd;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    
-    .course-title {
-      margin: 0 0 10px 0;
-    }
-    
-    .course-title a {
-      color: #0066cc;
-      text-decoration: none;
-    }
-    
-    .course-title a:hover {
-      text-decoration: underline;
-    }
-    
-    .course-description {
-      color: #555;
-      line-height: 1.6;
-      margin: 10px 0;
-    }
-    
-    .course-actions {
-      margin-top: 15px;
-    }
-    
-    .course-actions a {
-      margin-right: 15px;
-      color: #0066cc;
-      text-decoration: none;
-    }
-    
-    .course-actions a:hover {
-      text-decoration: underline;
-    }
-    
-    .delete-btn {
-      background: none;
-      border: none;
-      color: #dc3545;
-      cursor: pointer;
-      padding: 0;
-      font-size: 14px;
-    }
-    
-    .delete-btn:hover {
-      text-decoration: underline;
-    }
-    
-    .empty-message {
-      color: #666;
-      font-style: italic;
-      margin-top: 20px;
-    }
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1.h3.fw-bold.mb-0 Курсы
+      p.text-muted.small.mb-0 Все доступные программы обучения
+    a.btn.btn-primary(href=route('newCourse')) Создать курс
 
-  .header
-    h2 Список курсов
-    a.create-btn(href=route('newCourse')) Создать новый курс
-
-  form.search-form(role='form' method='GET' action='/courses')
-    input(type='search' name='term' value=term placeholder='Поиск...')
-    button(type='submit') Найти
+  form.mb-4(role='form' method='GET' action='/courses')
+    .input-group
+      span.input-group-text.bg-white(style='border-color: var(--uc-border);')
+        i.bi.bi-search.text-muted(style='font-size: .85rem;')
+      input.form-control(
+        type='search'
+        name='term'
+        value=term
+        placeholder='Поиск по названию или описанию...'
+        style='border-left: none; border-color: var(--uc-border);'
+      )
+      button.btn.btn-primary(type='submit') Найти
 
   if courses && courses.length
-    .courses-grid
+    .row.g-3
       each course in courses
-        .course-card
-          h3.course-title
-            a(href=route('course', { id: course.id })) #{course.title}
-
-          p.course-description #{course.description}
-
-          .course-actions
-            a(href=route('editCourse', { id: course.id })) Редактировать
-            form(action=`/courses/${course.id}` method='post' style='display:inline')
-              button.delete-btn(type='submit') Удалить
+        .col-12.col-md-6
+          .card.card-hover.h-100
+            .card-body.p-4
+              h3.card-title.h5.fw-semibold.mb-2
+                a.text-decoration-none(href=route('course', { id: course.id }) style='color: var(--uc-text);') #{course.title}
+              p.card-text.text-muted.small.mb-0 #{course.description}
+            .card-footer.bg-transparent.px-4.pb-3.pt-0(style='border-color: var(--uc-border);')
+              .d-flex.gap-2
+                a.btn.btn-sm.btn-outline-primary.flex-grow-1.text-center(href=route('course', { id: course.id })) Подробнее
+                a.btn.btn-sm.btn-outline-secondary(href=route('editCourse', { id: course.id })) Изменить
+                form(action=`/courses/${course.id}` method='post' class='d-inline m-0')
+                  button.btn.btn-sm.btn-outline-danger(type='submit') Удалить
   else
-    p.empty-message Курсы пока не добавлены
+    .card.text-center.py-5
+      p.text-muted.mb-1 Курсы не найдены
+      if term
+        p.text-muted.small.mb-0
+          | По запросу «#{term}» ничего не найдено.&nbsp;
+          a(href='/courses' style='color: var(--uc-primary);') Сбросить поиск
+      else
+        p.text-muted.small.mb-0 Добавьте первый курс, нажав кнопку выше

@@ -1,87 +1,48 @@
 extends ../layouts/page.pug
 
 block content
-  style.
-    .form-container {
-      max-width: 600px;
-    }
-    
-    .error-message {
-      color: #dc3545;
-      background-color: #f8d7da;
-      padding: 10px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 5px;
-    }
-    
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    
-    textarea {
-      min-height: 150px;
-      font-family: inherit;
-    }
-    
-    .button-group {
-      margin-top: 20px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    
-    .save-btn {
-      background-color: #0066cc;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    
-    .save-btn:hover {
-      background-color: #0052a3;
-    }
-    
-    .cancel-link {
-      color: #666;
-      text-decoration: none;
-    }
-    
-    .cancel-link:hover {
-      text-decoration: underline;
-    }
+  .row.justify-content-center
+    .col-sm-10.col-md-8.col-lg-7
 
-  h1 Edit course
+      nav.mb-4(aria-label='breadcrumb')
+        ol.breadcrumb.mb-0
+          li.breadcrumb-item
+            a.text-decoration-none(href='/courses' style='color: var(--uc-primary);') Курсы
+          li.breadcrumb-item
+            a.text-decoration-none(href=`/courses/${course.id}` style='color: var(--uc-primary);') #{course.title}
+          li.breadcrumb-item.active(aria-current='page') Редактирование
 
-  if error
-    .error-message= error.message
+      .mb-4
+        h1.h3.fw-bold.mb-1 Редактировать курс
+        p.text-muted.small.mb-0 Внесите изменения и сохраните
 
-  form(action=`/courses/${course.id}` method="post")
-    .form-group
-      label Title
-      input(type="text" name="title" value=course.title)
+      if error
+        .alert.alert-danger(role='alert') #{error.message}
 
-    .form-group
-      label Description
-      textarea(name="description")= course.description
+      .card
+        .card-body.p-4.p-md-5
 
-    .button-group
-      button.save-btn(type="submit") Save
-      a.cancel-link(href=`/courses`) Cancel
+          form(action=`/courses/${course.id}` method='post')
+            .mb-3
+              label.form-label.fw-semibold.small(for='title') Название курса
+              input.form-control(
+                type='text'
+                id='title'
+                name='title'
+                value=course.title
+                placeholder='Название курса'
+              )
+
+            .mb-4
+              label.form-label.fw-semibold.small(for='description') Описание
+              textarea.form-control(
+                id='description'
+                name='description'
+                rows='5'
+                placeholder='Описание курса...'
+                style='resize: vertical;'
+              )= course.description
+
+            .d-flex.gap-2
+              button.btn.btn-primary.flex-grow-1(type='submit') Сохранить изменения
+              a.btn.btn-outline-secondary(href=`/courses/${course.id}`) Отмена

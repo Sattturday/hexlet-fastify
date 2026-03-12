@@ -1,181 +1,78 @@
 extends ../layouts/page.pug
 
 block content
-  style.
-    .form-container {
-      max-width: 500px;
-      margin: 0 auto;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    
-    h1 {
-      color: #333;
-      border-bottom: 2px solid #f0f0f0;
-      padding-bottom: 10px;
-      margin-bottom: 25px;
-    }
-    
-    .error-message {
-      background-color: #ffebee;
-      color: #c62828;
-      padding: 12px 15px;
-      border-radius: 4px;
-      border-left: 4px solid #f44336;
-      margin-bottom: 20px;
-      font-size: 0.95em;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #444;
-      font-size: 0.95em;
-    }
-    
-    input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1em;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      box-sizing: border-box;
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: #2196F3;
-      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
-    }
-    
-    input.error {
-      border-color: #f44336;
-    }
-    
-    .password-hint {
-      color: #666;
-      font-size: 0.85em;
-      margin-top: 5px;
-      font-style: italic;
-    }
-    
-    .button-group {
-      margin-top: 30px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    
-    .submit-button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 4px;
-      font-size: 1em;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    
-    .submit-button:hover {
-      background-color: #45a049;
-    }
-    
-    .cancel-link {
-      color: #666;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-    }
-    
-    .cancel-link:hover {
-      background-color: #f5f5f5;
-    }
-    
-    .field-hint {
-      color: #666;
-      font-size: 0.85em;
-      margin-top: 5px;
-    }
-    
-    /* Стили для валидации пароля */
-    .password-strength {
-      margin-top: 8px;
-      height: 4px;
-      background-color: #f0f0f0;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    
-    .password-strength-bar {
-      height: 100%;
-      width: 0;
-      transition: width 0.3s, background-color 0.3s;
-    }
+  .row.justify-content-center
+    .col-sm-10.col-md-8.col-lg-6
 
-  .form-container
-    h1 Create new account
+      .mb-4
+        h1.h3.fw-bold.mb-1 Создание аккаунта
+        p.text-muted.small.mb-0 Заполните все поля для регистрации
 
-    if error
-      .error-message
-        strong Error:
-        = error.message
+      if error
+        .alert.alert-danger(role='alert')
+          strong Ошибка:
+          |  #{error.message}
 
-    form(action="/users" method="post" autocomplete="off")
-      .form-group
-        label(for="name") Full name
-        input(
-          type="text" 
-          id="name"
-          name="name" 
-          value=name
-          placeholder="John Doe"
-          autocomplete="off"
-          class=error && error.field === 'name' ? 'error' : ''
-        )
+      .card
+        .card-body.p-4.p-md-5
 
-      .form-group
-        label(for="email") Email address
-        input(
-          type="email" 
-          id="email"
-          name="email" 
-          value=email
-          placeholder="john@example.com"
-          autocomplete="off"
-          class=error && error.field === 'email' ? 'error' : ''
-        )
+          form(action='/users' method='post' autocomplete='off')
+            .mb-3
+              label.form-label.fw-semibold.small(for='name') Полное имя
+              input(
+                type='text'
+                id='name'
+                name='name'
+                value=name
+                placeholder='Иван Иванов'
+                autocomplete='off'
+                class=`form-control${error && error.field === 'name' ? ' is-invalid' : ''}`
+              )
+              if error && error.field === 'name'
+                .invalid-feedback #{error.message}
 
-      .form-group
-        label(for="password") Password
-        input(
-          type="password" 
-          id="password"
-          name="password"
-          placeholder="••••••••"
-          autocomplete="new-password"
-          class=error && error.field === 'password' ? 'error' : ''
-        )
-        .password-hint Min. 8 characters with letters and numbers
+            .mb-3
+              label.form-label.fw-semibold.small(for='email') Email адрес
+              input(
+                type='email'
+                id='email'
+                name='email'
+                value=email
+                placeholder='ivan@example.com'
+                autocomplete='off'
+                class=`form-control${error && error.field === 'email' ? ' is-invalid' : ''}`
+              )
+              if error && error.field === 'email'
+                .invalid-feedback #{error.message}
 
-      .form-group
-        label(for="passwordConfirmation") Confirm password
-        input(
-          type="password" 
-          id="passwordConfirmation"
-          name="passwordConfirmation"
-          placeholder="••••••••"
-          autocomplete="new-password"
-          class=error && error.field === 'passwordConfirmation' ? 'error' : ''
-        )
+            .mb-3
+              label.form-label.fw-semibold.small(for='password') Пароль
+              input(
+                type='password'
+                id='password'
+                name='password'
+                placeholder='••••••••'
+                autocomplete='new-password'
+                class=`form-control${error && error.field === 'password' ? ' is-invalid' : ''}`
+              )
+              if error && error.field === 'password'
+                .invalid-feedback #{error.message}
+              else
+                .form-text Минимум 8 символов, буквы и цифры
 
-      .button-group
-        button.submit-button(type="submit") Create account
-        a.cancel-link(href="/users") Cancel
+            .mb-4
+              label.form-label.fw-semibold.small(for='passwordConfirmation') Подтверждение пароля
+              input(
+                type='password'
+                id='passwordConfirmation'
+                name='passwordConfirmation'
+                placeholder='••••••••'
+                autocomplete='new-password'
+                class=`form-control${error && error.field === 'passwordConfirmation' ? ' is-invalid' : ''}`
+              )
+              if error && error.field === 'passwordConfirmation'
+                .invalid-feedback #{error.message}
+
+            .d-flex.gap-2
+              button.btn.btn-primary.flex-grow-1(type='submit') Создать аккаунт
+              a.btn.btn-outline-secondary(href='/users') Отмена
