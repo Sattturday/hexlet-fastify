@@ -72,19 +72,23 @@ export const create = async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10)
-  const stmt = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)')
-  stmt.run([name.trim(), email.trim().toLowerCase(), hashedPassword], function (error) {
-    if (error) {
-      res.view('users/new', {
-        name,
-        email,
-        error,
-      })
-      return
-    }
+  return new Promise((resolve, reject) => {
+    const stmt = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)')
+    stmt.run([name.trim(), email.trim().toLowerCase(), hashedPassword], function (error) {
+      if (error) {
+        res.view('users/new', {
+          name,
+          email,
+          error,
+        })
+        resolve()
+        return
+      }
 
-    req.flash('success', 'User has been created')
-    res.redirect(`/users/${this.lastID}`)
+      req.flash('success', 'User has been created')
+      res.redirect('/session/new')
+      resolve()
+    })
   })
 }
 

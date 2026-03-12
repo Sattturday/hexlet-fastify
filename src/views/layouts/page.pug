@@ -71,6 +71,12 @@ html
         color: #0066cc;
       }
 
+      .auth-links {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
       .main {
         flex: 1;
         padding: 30px 0;
@@ -118,7 +124,9 @@ html
               form(action=route('deleteSession') method='post' style='display:inline')
                 button.login(type='submit' style='background:none;border:none;cursor:pointer;font:inherit;color:inherit;font-weight:700;padding:0') Выйти
           else
-            a.login(href=route('newSession')) Войти
+            .auth-links
+              a.login(href=route('newSession')) Войти
+              a.login(href=route('newUser')) Регистрация
     main.main
       .container
         if flash && flash.success
