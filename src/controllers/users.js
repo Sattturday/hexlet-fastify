@@ -1,7 +1,8 @@
+import bcrypt from 'bcrypt'
 import { db } from '../index.js'
 
 export const index = (req, res) => {
-  db.all('SELECT * FROM users', (error, users) => {
+  db.all('SELECT id, name, email FROM users', (error, users) => {
     if (error) {
       res.code(500).send({ message: 'Database error' })
       return
@@ -20,7 +21,7 @@ export const newUser = (req, res) => {
 export const show = (req, res) => {
   const id = Number(req.params.id)
 
-  db.get('SELECT * FROM users WHERE id = ?', [id], (error, user) => {
+  db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (error, user) => {
     if (error) {
       res.code(500).send({ message: 'Database error' })
       return
@@ -38,7 +39,7 @@ export const show = (req, res) => {
 export const edit = (req, res) => {
   const id = Number(req.params.id)
 
-  db.get('SELECT * FROM users WHERE id = ?', [id], (error, user) => {
+  db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (error, user) => {
     if (error) {
       res.code(500).send({ message: 'Database error' })
       return
@@ -53,7 +54,7 @@ export const edit = (req, res) => {
   })
 }
 
-export const create = (req, res) => {
+export const create = async (req, res) => {
   const {
     name,
     email,
@@ -65,21 +66,18 @@ export const create = (req, res) => {
     res.view('users/new', {
       name,
       email,
-      password,
-      passwordConfirmation,
       error: req.validationError,
     })
     return
   }
 
+  const hashedPassword = await bcrypt.hash(password, 10)
   const stmt = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)')
-  stmt.run([name.trim(), email.trim().toLowerCase(), password], function (error) {
+  stmt.run([name.trim(), email.trim().toLowerCase(), hashedPassword], function (error) {
     if (error) {
       res.view('users/new', {
         name,
         email,
-        password,
-        passwordConfirmation,
         error,
       })
       return
@@ -93,7 +91,7 @@ export const create = (req, res) => {
 export const update = (req, res) => {
   const id = Number(req.params.id)
 
-  db.get('SELECT * FROM users WHERE id = ?', [id], (error, user) => {
+  db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (error, user) => {
     if (error) {
       res.code(500).send({ message: 'Database error' })
       return
@@ -130,7 +128,7 @@ export const destroy = (req, res) => {
   const stmt = db.prepare('DELETE FROM users WHERE id = ?')
   stmt.run(id, (err) => {
     if (err) {
-      res.send(err)
+      res.code(500).send({ message: 'Database error' })
       return
     }
     res.redirect('/users')

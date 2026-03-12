@@ -1,19 +1,11 @@
 import * as yup from 'yup'
 import * as coursesController from '../controllers/courses.js'
+import { validatorCompiler } from '../lib/validatorCompiler.js'
 
 const courseSchema = yup.object({
   title: yup.string().min(2, 'Title must contain at least 2 characters'),
   description: yup.string().min(10, 'Description must contain at least 10 characters'),
 })
-
-const validatorCompiler = ({ schema }) => (data) => {
-  try {
-    const value = schema.validateSync(data)
-    return { value }
-  } catch (e) {
-    return { error: e }
-  }
-}
 
 export default async (app) => {
   app.get('/courses', { name: 'courses' }, coursesController.index)
