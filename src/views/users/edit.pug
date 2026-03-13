@@ -25,7 +25,7 @@ block content
       .card
         .card-body.p-4.p-md-5
 
-          form(action=`/users/${user.id}?_method=PATCH` method='post')
+          form(action=`/users/${user.id}` method='post')
             .mb-3
               label.form-label.fw-semibold.small(for='name') Полное имя
               input(
@@ -34,9 +34,9 @@ block content
                 name='name'
                 value=user.name
                 placeholder='Иван Иванов'
-                class=`form-control${error && error.field === 'name' ? ' is-invalid' : ''}`
+                class=`form-control${error && error.path === 'name' ? ' is-invalid' : ''}`
               )
-              if error && error.field === 'name'
+              if error && error.path === 'name'
                 .invalid-feedback #{error.message}
 
             .mb-4
@@ -47,9 +47,9 @@ block content
                 name='email'
                 value=user.email
                 placeholder='ivan@example.com'
-                class=`form-control${error && error.field === 'email' ? ' is-invalid' : ''}`
+                class=`form-control${error && error.path === 'email' ? ' is-invalid' : ''}`
               )
-              if error && error.field === 'email'
+              if error && error.path === 'email'
                 .invalid-feedback #{error.message}
               else
                 .form-text Изменение email потребует подтверждения

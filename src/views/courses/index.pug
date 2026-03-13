@@ -33,7 +33,7 @@ block content
               .d-flex.gap-2
                 a.btn.btn-sm.btn-outline-primary.flex-grow-1.text-center(href=route('course', { id: course.id })) Подробнее
                 a.btn.btn-sm.btn-outline-secondary(href=route('editCourse', { id: course.id })) Изменить
-                form(action=`/courses/${course.id}` method='post' class='d-inline m-0')
+                form(action=`/courses/${course.id}/delete` method='post' class='d-inline m-0')
                   button.btn.btn-sm.btn-outline-danger(type='submit') Удалить
   else
     .card.text-center.py-5

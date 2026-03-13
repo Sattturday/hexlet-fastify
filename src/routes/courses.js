@@ -34,5 +34,5 @@ export default async (app) => {
     validatorCompiler,
   }, coursesController.update)
 
-  app.delete('/courses/:id', { name: 'deleteCourse' }, coursesController.destroy)
+  app.post('/courses/:id/delete', { name: 'deleteCourse' }, coursesController.destroy)
 }

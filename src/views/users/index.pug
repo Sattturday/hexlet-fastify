@@ -23,5 +23,5 @@ block content
             .d-flex.gap-2.flex-shrink-0
               a.btn.btn-sm.btn-outline-secondary(href=`/users/${user.id}`) Просмотр
               a.btn.btn-sm.btn-outline-secondary(href=`/users/${user.id}/edit`) Изменить
-              form(action=`/users/${user.id}?_method=DELETE` method='post' class='d-inline m-0')
+              form(action=`/users/${user.id}/delete` method='post' class='d-inline m-0')
                 button.btn.btn-sm.btn-outline-danger(type='submit') Удалить

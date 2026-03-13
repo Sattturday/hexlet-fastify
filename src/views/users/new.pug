@@ -26,9 +26,9 @@ block content
                 value=name
                 placeholder='Иван Иванов'
                 autocomplete='off'
-                class=`form-control${error && error.field === 'name' ? ' is-invalid' : ''}`
+                class=`form-control${error && error.path === 'name' ? ' is-invalid' : ''}`
               )
-              if error && error.field === 'name'
+              if error && error.path === 'name'
                 .invalid-feedback #{error.message}
 
             .mb-3
@@ -40,9 +40,9 @@ block content
                 value=email
                 placeholder='ivan@example.com'
                 autocomplete='off'
-                class=`form-control${error && error.field === 'email' ? ' is-invalid' : ''}`
+                class=`form-control${error && error.path === 'email' ? ' is-invalid' : ''}`
               )
-              if error && error.field === 'email'
+              if error && error.path === 'email'
                 .invalid-feedback #{error.message}
 
             .mb-3
@@ -53,9 +53,9 @@ block content
                 name='password'
                 placeholder='••••••••'
                 autocomplete='new-password'
-                class=`form-control${error && error.field === 'password' ? ' is-invalid' : ''}`
+                class=`form-control${error && error.path === 'password' ? ' is-invalid' : ''}`
               )
-              if error && error.field === 'password'
+              if error && error.path === 'password'
                 .invalid-feedback #{error.message}
               else
                 .form-text Минимум 5 символов
@@ -68,9 +68,9 @@ block content
                 name='passwordConfirmation'
                 placeholder='••••••••'
                 autocomplete='new-password'
-                class=`form-control${error && error.field === 'passwordConfirmation' ? ' is-invalid' : ''}`
+                class=`form-control${error && error.path === 'passwordConfirmation' ? ' is-invalid' : ''}`
               )
-              if error && error.field === 'passwordConfirmation'
+              if error && error.path === 'passwordConfirmation'
                 .invalid-feedback #{error.message}
 
             .d-flex.gap-2

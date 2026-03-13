@@ -24,7 +24,7 @@ block content
     .d-flex.flex-wrap.gap-2
       a.btn.btn-outline-secondary(href=route('courses')) Все курсы
       a.btn.btn-primary(href=route('editCourse', { id: course.id })) Редактировать
-      form(action=`/courses/${course.id}` method='post' class='d-inline m-0')
+      form(action=`/courses/${course.id}/delete` method='post' class='d-inline m-0')
         button.btn.btn-outline-danger(type='submit') Удалить
 
   else

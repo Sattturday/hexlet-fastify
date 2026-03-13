@@ -44,5 +44,5 @@ export default async (app) => {
     validatorCompiler,
   }, usersController.update)
 
-  app.delete('/users/:id', { name: 'deleteUser' }, usersController.destroy)
+  app.post('/users/:id/delete', { name: 'deleteUser' }, usersController.destroy)
 }

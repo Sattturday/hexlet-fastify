@@ -62,12 +62,11 @@ export const create = async (req, res) => {
   } = req.body
 
   if (req.validationError) {
-    res.view('users/new', {
+    return res.view('users/new', {
       name,
       email,
       error: req.validationError,
     })
-    return
   }
 
   const hashedPassword = await bcrypt.hash(password, 10)
